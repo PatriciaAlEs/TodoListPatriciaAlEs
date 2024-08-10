@@ -1,4 +1,4 @@
-h1 {  
+h1 {
     font-family: Georgia, 'Times New Roman', Times, serif;
     color: rgb(219, 169, 135);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
@@ -13,8 +13,8 @@ h1 {
     max-width: 400px;
     padding: 10px 20px;
     margin: auto;
-    min-height: 30vh; /* 30% de la altura de la ventana */
-
+    min-height: 30vh;
+    /* 30% de la altura de la ventana */
     color: rgb(219, 169, 135);
     border: rgb(177, 132, 101) 5px dashed;
     box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.5);
@@ -23,13 +23,20 @@ h1 {
 
 li {
     list-style: none;
-    padding: 5px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.424);
-    display: flex;             
-    justify-content: space-between; /* Espacio entre el contenido y el botón */
-    align-items: center;       /* Alinea verticalmente los elementos dentro de <li> */
+    display: flex;
+    justify-content: space-between;
+    /* Espacio entre el contenido y el botón */
+    align-items: center;
+    /* Alinea verticalmente los elementos dentro de <li> */
+    border: 15px;
+    padding-left: 15px;
 }
-   
+
+li:hover {
+    background-color: rgba(224, 179, 148, 0.589);
+
+}
 
 #app {
     width: 100vw;
@@ -37,7 +44,8 @@ li {
     background-image: url("https://png.pngtree.com/background/20221106/original/pngtree-green-watercolor-background-with-leaves-frame-picture-image_1949462.jpg");
     background-position: center;
     background-repeat: no-repeat;
-    background-size: cover; /* la imagen cubre toda el fondo */
+    background-size: cover;
+    /* la imagen cubre toda el fondo */
     margin: 0;
     padding: 0;
 }
@@ -49,17 +57,10 @@ ul {
     padding-bottom: 5px;
 }
 
-
 .container {
     max-width: 400px;
     margin: auto;
     padding: 10px 20px;
-}
-
-
-.btn {
-    background-color: rgb(219, 169, 135);
-    color: white;
 }
 
 
@@ -69,8 +70,51 @@ ul {
     background-image: url("https://png.pngtree.com/background/20221106/original/pngtree-green-watercolor-background-with-leaves-frame-picture-image_1949462.jpg");
     background-position: center;
     background-repeat: no-repeat;
-    background-size: cover; 
+    background-size: cover;
     margin: 0;
     padding: 0;
 }
 
+
+.fa-trash-alt {
+    color: antiquewhite;
+
+
+}
+
+
+input {
+    width: 65%;
+    /* Ajusta el ancho a un tamaño más grande o al 100% del contenedor */
+    padding: 5px;
+    /* Ajusta el padding para que no recorte el texto */
+    box-sizing: border-box;
+    /* Asegura que el padding se incluya dentro del ancho total */
+    font-size: 10px;
+    /* Asegúrate de que el tamaño de fuente sea adecuado */
+    outline: none;
+}
+
+input:focus {
+    border-color: #fcfeff;
+    /* Color del borde cuando el input tiene el foco */
+    box-shadow: 0 0 10px rgba(239, 152, 76, 0.816);
+    /* Añade un ligero resplandor alrededor */
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.checkboton {
+    margin-right: 10px;
+    /* Espacio entre el checkbox y el check-icon */
+    color: black;
+    accent-color: black;
+}
+
+.misbotones {
+    display: flex;
+}
