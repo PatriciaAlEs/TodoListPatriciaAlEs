@@ -4,18 +4,14 @@ const BotonCheck = () => {
 
     const [botonCheck, setBotonCheck] = useState(false)
 
-    const muestraElCheck = () => {
-        setBotonCheck(!botonCheck)
-    }
-
-
     return (
         <div className="input-container">
             <input
                 className="checkboton"
                 type="checkbox"
                 value=""
-                onClick={muestraElCheck}
+                onClick={()=> setBotonCheck(!botonCheck)}
+                //los onLoQueSea siempre devuelven callback, esto es un callback -> {()=> "lafunciondelestado(!loContrarioALaVariableDelEstado)"}
             />
         </div>
 

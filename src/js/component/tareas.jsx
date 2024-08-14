@@ -1,77 +1,119 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import BotonCheck from "./check";
 
+
 const ListaDeTareas = () => {
-    const [Tarea, setTarea] = useState("");
-    const [Lista, setLista] = useState([]);
+    const [tarea, setTarea] = useState("");
+    const [lista, setLista] = useState([]);
 
 
-    const addProductsToList = () => {
-        setLista([...Lista, Tarea]); //esto debería de funcionar
-        setTarea("")
-        console.log("product added", Lista)
+
+    // Función para cargar la lista de tareas desde la API (asincrona)
+    const cargarListaDeTareas = async () => {
+        if (lista.length > 0) {
+            return;
+        }
+        //condicion para no entrar en bucle
+
+        const response = await fetch("https://playground.4geeks.com/todo/users/Harry%20Potter")
+        // fetch(consulta) recibe como argumento la URL donde hacemos la peticion para la obtencion de datos/asincrono! promesa pendiente hasta el .then
+        // .then hay que añadirlo, con el .then espera y nos devuelve un valor. la peticion solo está lanzada pero sin manipular.
+        const data = await response.json();
+        //convertimos la respuesta en un json (o texto o lo que sea)
+
+        console.log(data)
+        //tengo este ERROR 
+        //un elemento de campo de formulario debe tener un atributo de identificación o nombre
+    }
+
+    //esto hará que carguen las tareas al inicio porque se ejecuta obtenerTarea
+    useEffect(() => {
+        obtenerTarea()
+    }, [])
+
+    // funcion para obtener la lista de tareas al montarse el componente 
+    const obtenerTarea = () => {
+        cargarListaDeTareas()
     };
 
-    const tareaVacia = Lista == "" ? "No hay tareas, añade tu tarea" : " Introduzca otra tarea";
 
-
-    const agregarValorInput = (event) => {
-        setTarea(event.target.value)
+    // Funcion para agregar una tarea a la lista
+    const crearTarea = () => {
+        setLista([...lista, tarea]); //...(todo lo demas)+ lista y tarea, en un nuevo array que engloba los datos de las dos variables de estado <lista, tarea>
+        setTarea("")
     }
-    // funcion para agregar elemento a la lista 
 
 
-    const presionarTeclaNuevoInput = (event) => {
-        if (event.key === "Enter") {
-            addProductsToList();
-        }
+    //para actualizar la lista en el servidor (API)
+    const crearLista = () => {
+
     }
-    // funcion para al presionar que imprimi un nuevo elemento en la lista
 
 
 
-    const deleteItems = (indexItem) => {
+    //para eliminar una tarea de la lista 
+    const eliminarTarea = (indexItem) => {
         setLista((prevState) => prevState.filter((_, index) => index !== indexItem))
     }
 
-    return (
-        <div>
-            <input
-                type="text"
-                placeholder={tareaVacia}
 
-                value={Tarea}
-                // el valor es el nombre de la primera variable de estado y su valor useState("") por eso empieza vacío el input
+    // funcion para manejar la Tarea con la API?
+    const manejarTarea = (event) => {
+        setTarea(event.target.value)
+    }
 
-                onChange={agregarValorInput}
-                // llamamos a la funcion agregarValorInput
-                onKeyDown={presionarTeclaNuevoInput}
-            // llamamos a la funcion presionarTeclaNuevoImput
-            >
 
-            </input>
+    const teclaAgregaNuevaTarea = (event) => {
+        if (event.key === "Enter") {
+            crearTarea();
+        }
+    }
+    // funcion para al presionar que imprime un nuevo elemento en la lista
 
-            <ul>
 
-                {Lista.map((cosas, index) => (
-                    <li key={index} className="basurahover">{cosas}
-                        {/* onClick siempre tiene un callback que seria un evento a no ser que le pasemos otro parametro dentro de la funcion (en este caso la funcion es deleteItems, y el parametro, (index)) */}
-                        <div className="misbotones">
-                            <BotonCheck />
-                            <button className="btn" onClick={() => deleteItems(index)}>
-                                {/* //el icono de la basura va dentro del li */}
 
-                                <i className="fas fa-trash-alt" />
-                            </button>
-                        </div>
-                    </li>
-                ))}
+    const tareaVacia = lista == "" ? "No hay tareas, añade tu tarea" : " Introduzca otra tarea";
 
-            </ul>
-            <div className="cuantasTareas"> Total de tareas por hacer: {Lista.length}</div>
 
-        </div>
-    )
+
+    if (lista)
+        return (
+            <div>
+                <input
+                    type="text"
+                    placeholder={tareaVacia}
+                    value={tarea}
+                    // el valor es el nombre de la primera variable de estado y su valor useState("") por eso empieza vacío el input
+                    onChange={manejarTarea}
+                    // llamamos a la funcion manejarTarea
+                    onKeyDown={teclaAgregaNuevaTarea}
+                // llamamos a la funcion teclaAgregaNuevaTarea
+                >
+                </input>
+
+                <ul>
+
+                    {lista.map((cosas, index) => (
+                        <li key={index} className="basurahover">{cosas}
+                            {/* onClick siempre tiene un callback que seria un evento a no ser que le pasemos otro parametro dentro de la funcion (en este caso la funcion es eliminarTarea, y el parametro, (index)) */}
+                            <div className="misbotones">
+                                <BotonCheck />
+                                <button className="btn" onClick={() => eliminarTarea(index)}>
+                                    {/* //el icono de la basura va dentro del li */}
+
+                                    <i className="fas fa-trash-alt" />
+                                </button>
+                            </div>
+                        </li>
+                    ))}
+
+                </ul>
+                <div className="cuantasTareas"> Total de tareas por hacer: {lista.length}</div>
+
+
+
+            </div>
+        )
 }
 
 
