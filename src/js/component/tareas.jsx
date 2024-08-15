@@ -70,6 +70,7 @@ const ListaDeTareas = () => {
             // fetch(consulta) recibe como argumento la URL donde hacemos la peticion para la obtencion de datos/asincrono! promesa pendiente hasta el .then
             const data = await response.json();
             //convertimos la respuesta en un json (o texto o lo que sea)
+
             console.log(data)
 
         } catch (error) {
@@ -132,9 +133,6 @@ const ListaDeTareas = () => {
         }
     }
     // funcion para al presionar que imprime un nuevo elemento en la lista
-
-
-
 
 
     const tareaVacia = lista == "" ? "No hay tareas, añade tu tarea" : " Introduzca otra tarea";
