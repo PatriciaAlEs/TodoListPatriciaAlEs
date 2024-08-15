@@ -10,47 +10,43 @@ const ListaDeTareas = () => {
 
     // Función para cargar la lista de tareas desde la API (asincrona)
     const cargarListaDeTareas = async () => {
-        if (lista.length > 0) {
-            return;
+        try {
+            if (lista.length > 0) {
+                return;
+            }
+            //condicion para no entrar en bucle
+            const response = await fetch("https://playground.4geeks.com/todo/users/Harry%20Potter")
+            // fetch(consulta) recibe como argumento la URL donde hacemos la peticion para la obtencion de datos/asincrono! promesa pendiente hasta el .then
+            // .then hay que añadirlo, con el .then espera y nos devuelve un valor. la peticion solo está lanzada pero sin manipular.
+            const data = await response.json();
+            //convertimos la respuesta en un json (o texto o lo que sea)
+            console.log(data)
+
+        } catch (error) {
+            console.log(error)
         }
-        //condicion para no entrar en bucle
-
-        const response = await fetch("https://playground.4geeks.com/todo/users/Harry%20Potter")
-        // fetch(consulta) recibe como argumento la URL donde hacemos la peticion para la obtencion de datos/asincrono! promesa pendiente hasta el .then
-        // .then hay que añadirlo, con el .then espera y nos devuelve un valor. la peticion solo está lanzada pero sin manipular.
-        const data = await response.json();
-        //convertimos la respuesta en un json (o texto o lo que sea)
-
-        console.log(data)
-        //tengo este ERROR 
-        //un elemento de campo de formulario debe tener un atributo de identificación o nombre
     }
+    //try y catch es manejo de errores? 
+
 
     //esto hará que carguen las tareas al inicio porque se ejecuta obtenerTarea
     useEffect(() => {
-        obtenerTarea()
-    }, [])
-
-    // funcion para obtener la lista de tareas al montarse el componente 
-    const obtenerTarea = () => {
         cargarListaDeTareas()
-    };
+    }, [])
+    // funcion para obtener la lista de tareas al montarse el componente 
+
 
 
     // Funcion para agregar una tarea a la lista
     const crearTarea = () => {
+
         setLista([...lista, tarea]); //...(todo lo demas)+ lista y tarea, en un nuevo array que engloba los datos de las dos variables de estado <lista, tarea>
         setTarea("")
-    }
 
-
-    //para actualizar la lista en el servidor (API)
-    const crearLista = () => {
 
     }
 
-
-
+    
     //para eliminar una tarea de la lista 
     const eliminarTarea = (indexItem) => {
         setLista((prevState) => prevState.filter((_, index) => index !== indexItem))
