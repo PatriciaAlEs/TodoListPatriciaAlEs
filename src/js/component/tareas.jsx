@@ -13,18 +13,9 @@ const ListaDeTareas = () => {
             const response = await fetch('https://playground.4geeks.com/todo/users/HarryPotter', {
                 method: 'GET',
             });
-
-            if (response.ok) {
-                console.log('Usuario ya existe');
-                return true; // Usuario ya existe
-            } else if (response.status === 404) {
-                console.log('Usuario no encontrado');
-                return false; // Usuario no existe
-            } else {
-                throw new Error('Error al verificar usuario');
-            }
+            return response.ok;
         } catch (error) {
-            console.log('Error al verificar usuario:', error);
+            console.log(error);
             return false;
         }
     };
@@ -43,18 +34,8 @@ const ListaDeTareas = () => {
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({
-                        username: "HarryPotter",
-                    }),
                 });
-
-            if (!response.ok) {
-                throw new Error("Error al crear el usuario")
-            }
-
-            // fetch(consulta) recibe como argumento la URL donde hacemos la peticion para la obtencion de datos/asincrono! promesa pendiente hasta el .then
             const data = await response.json();
-            //convertimos la respuesta en un json (o texto o lo que sea)
             console.log(data)
 
         } catch (error) {
@@ -65,28 +46,21 @@ const ListaDeTareas = () => {
 
     const obtenerArrayApi = async () => {
         try {
-            //condicion para no entrar en bucle
             const response = await fetch("https://playground.4geeks.com/todo/users/HarryPotter")
-            // fetch(consulta) recibe como argumento la URL donde hacemos la peticion para la obtencion de datos/asincrono! promesa pendiente hasta el .then
             const data = await response.json();
-            //convertimos la respuesta en un json (o texto o lo que sea)
-
-            console.log(data)
-
+            setLista(data.todos);
+            console.log(data.todos)
         } catch (error) {
-            console.log(error)
+            console.log(error);
+            setLista([]);
         }
-    }
-
-
-    //esto hará que carguen las tareas al inicio porque se ejecuta obtenerTarea
+    };
 
 
     useEffect(() => {
         createUser()
         obtenerArrayApi()
     }, [])
-    // funcion para obtener la lista de tareas al montarse el componente 
 
 
     const crearTarea = async () => {
@@ -102,26 +76,26 @@ const ListaDeTareas = () => {
                 })
             });
 
-            const data = await response.json();
-            console.log(data);
+            if (response.ok) {
+                const data = await response.json();
+                setLista(prevList => [...prevList, data]);
+            } else {
+                console.error("Error al agregar la tarea");
+            }
 
         } catch (error) {
             console.log(error);
         }
 
-        setLista([...lista, tarea]); // Agrega la nueva tarea a la lista actual
         setTarea(""); // Limpia el input de tarea
     }
 
 
-
-    //para eliminar una tarea de la lista 
     const eliminarTarea = (indexItem) => {
         setLista((prevState) => prevState.filter((_, index) => index !== indexItem))
     }
 
 
-    // funcion para manejar la Tarea con la API?
     const manejarTarea = (event) => {
         setTarea(event.target.value)
     }
@@ -129,53 +103,51 @@ const ListaDeTareas = () => {
 
     const teclaAgregaNuevaTarea = (event) => {
         if (event.key === "Enter") {
-            crearTarea(tarea);
+            crearTarea();
         }
     }
-    // funcion para al presionar que imprime un nuevo elemento en la lista
 
 
     const tareaVacia = lista == "" ? "No hay tareas, añade tu tarea" : " Introduzca otra tarea";
 
 
-    if (lista)
-        return (
-            <div>
-                <input
-                    type="text"
-                    placeholder={tareaVacia}
-                    value={tarea}
-                    // el valor es el nombre de la primera variable de estado y su valor useState("") por eso empieza vacío el input
-                    onChange={manejarTarea}
-                    // llamamos a la funcion manejarTarea
-                    onKeyDown={teclaAgregaNuevaTarea}
-                // llamamos a la funcion teclaAgregaNuevaTarea
-                >
-                </input>
+    return (
+        <div>
+            <input
+                type="text"
+                placeholder={tareaVacia}
+                value={tarea}
+                // el valor es el nombre de la primera variable de estado y su valor useState("") por eso empieza vacío el input
+                onChange={manejarTarea}
+                // llamamos a la funcion manejarTarea
+                onKeyDown={teclaAgregaNuevaTarea}
+            // llamamos a la funcion teclaAgregaNuevaTarea
+            >
+            </input>
 
-                <ul>
+            <ul>
 
-                    {lista.map((cosas, index) => (
-                        <li key={index} className="basurahover">{cosas}
-                            {/* onClick siempre tiene un callback que seria un evento a no ser que le pasemos otro parametro dentro de la funcion (en este caso la funcion es eliminarTarea, y el parametro, (index)) */}
-                            <div className="misbotones">
-                                <BotonCheck />
-                                <button className="btn" onClick={() => eliminarTarea(index)}>
-                                    {/* //el icono de la basura va dentro del li */}
+                {lista.map((cosas) => (
+                    <li key={cosas.id} className="basurahover">{cosas.label}
+                        {/* onClick siempre tiene un callback que seria un evento a no ser que le pasemos otro parametro dentro de la funcion (en este caso la funcion es eliminarTarea, y el parametro, (index)) */}
+                        <div className="misbotones">
+                            <BotonCheck />
+                            <button className="btn" onClick={() => eliminarTarea(cosas.id)}>
+                                {/* //el icono de la basura va dentro del li */}
 
-                                    <i className="fas fa-trash-alt" />
-                                </button>
-                            </div>
-                        </li>
-                    ))}
+                                <i className="fas fa-trash-alt" />
+                            </button>
+                        </div>
+                    </li>
+                ))}
 
-                </ul>
-                <div className="cuantasTareas"> Total de tareas por hacer: {lista.length}</div>
-
+            </ul>
+            <div className="cuantasTareas"> Total de tareas por hacer: {lista.length}</div>
 
 
-            </div>
-        )
+
+        </div>
+    )
 }
 
 
