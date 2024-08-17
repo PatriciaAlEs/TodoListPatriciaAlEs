@@ -7,108 +7,123 @@ const ListaDeTareas = () => {
     const [lista, setLista] = useState([]);
 
 
-    const verificarUsuario = async () => {
-        try {
-            // Verificamos si el usuario ya existe
-            const response = await fetch('https://playground.4geeks.com/todo/users/HarryPotter', {
-                method: 'GET',
-            });
-            return response.ok;
-        } catch (error) {
-            console.log(error);
-            return false;
-        }
-    };
 
-
-    // Función para cargar la lista de tareas desde la API (asincrona)
     const createUser = async () => {
         try {
-            if (await verificarUsuario()) {
-                return;
+            const response = await fetch("https://playground.4geeks.com/todo/users/HarryPotter", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            if (!response.ok) {
+                throw new Error('No se pudo crear el usuario.');
             }
-            //condicion para no entrar en bucle
-            const response = await fetch("https://playground.4geeks.com/todo/users/HarryPotter",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
             const data = await response.json();
-            console.log(data)
-
+            console.log('Usuario creado exitosamente:', data);
+            getListTask();
         } catch (error) {
-            console.log(error)
+            console.error('Error:', error);
         }
     }
 
 
-    const obtenerArrayApi = async () => {
+    const getListTask = () => {
+        fetch("https://playground.4geeks.com/todo/users/HarryPotter")
+            .then((response) => {
+                if (!response.ok) {
+                    createUser();
+                    throw new Error('No se pudo obtener la lista de tareas.');
+                }
+                return response.json();
+            })
+            .then((data) => {
+                setLista(data.todos);
+            })
+            .catch((error) => {
+                console.log('Error:', error);
+            });
+    };
+
+
+
+    const crearTarea = () => {
+        fetch("https://playground.4geeks.com/todo/todos/HarryPotter", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                label: tarea,
+                is_done: false,
+            }),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                getListTask();
+                setTarea("");
+            })
+            .catch((error) => {
+                console.log('Error:', error);
+            });
+            console.log(tarea)
+            console.log(lista)
+    };
+
+    
+    const eliminarTarea = async (id) => {
         try {
-            const response = await fetch("https://playground.4geeks.com/todo/users/HarryPotter")
-            const data = await response.json();
-            setLista(data.todos);
-            console.log(data.todos)
+            const response = await fetch(`https://playground.4geeks.com/todo/todos/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            console.log(response);
+    
+            if (!response.ok) {
+                throw new Error('No se pudo eliminar la tarea');
+            }
+    
+            setLista((prevState) => prevState.filter((tarea) => tarea.id !== id));
+    
+            console.log(`Tarea con id ${id} eliminada exitosamente.`);
         } catch (error) {
-            console.log(error);
-            setLista([]);
+            console.error('Hubo un problema con la eliminación:', error);
         }
     };
+    
+    const eliminarTodasTareas = async () => {
+        try {
+            const response = await fetch(`https://playground.4geeks.com/todo/users/HarryPotter`, {
+                method: 'DELETE',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+    
+            if (!response.ok) {
+                throw new Error('No se pudo eliminar la tarea');
+            }
+    
+            setLista([]);
+            createUser();
+    
+            console.log('Todas las tareas han sido eliminadas exitosamente.');
+        } catch (error) {
+            console.error('Hubo un problema con la eliminación:', error);
+        }
+    };
+
+    const tareaVacia = lista == "" ? "No hay tareas, añade tu tarea" : " Introduzca otra tarea";
+                    
 
 
     useEffect(() => {
-        createUser()
-        obtenerArrayApi()
-    }, [])
+        getListTask(); 
+    }, []);
 
-
-    const crearTarea = async () => {
-        try {
-            const response = await fetch("https://playground.4geeks.com/todo/todos/HarryPotter", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    label: tarea,
-                    is_done: false
-                })
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setLista(prevList => [...prevList, data]);
-            } else {
-                console.error("Error al agregar la tarea");
-            }
-
-        } catch (error) {
-            console.log(error);
-        }
-
-        setTarea(""); // Limpia el input de tarea
-    }
-
-
-    const eliminarTarea = (indexItem) => {
-        setLista((prevState) => prevState.filter((_, index) => index !== indexItem))
-    }
-
-
-    const manejarTarea = (event) => {
-        setTarea(event.target.value)
-    }
-
-
-    const teclaAgregaNuevaTarea = (event) => {
-        if (event.key === "Enter") {
-            crearTarea();
-        }
-    }
-
-
-    const tareaVacia = lista == "" ? "No hay tareas, añade tu tarea" : " Introduzca otra tarea";
 
 
     return (
@@ -117,38 +132,34 @@ const ListaDeTareas = () => {
                 type="text"
                 placeholder={tareaVacia}
                 value={tarea}
-                // el valor es el nombre de la primera variable de estado y su valor useState("") por eso empieza vacío el input
-                onChange={manejarTarea}
-                // llamamos a la funcion manejarTarea
-                onKeyDown={teclaAgregaNuevaTarea}
-            // llamamos a la funcion teclaAgregaNuevaTarea
-            >
-            </input>
+                onChange={(e) => setTarea(e.target.value)}
+                onKeyDown={(e) => {if (e.key === "Enter") crearTarea()}}
+        
+            />
 
             <ul>
-
-                {lista.map((cosas) => (
-                    <li key={cosas.id} className="basurahover">{cosas.label}
-                        {/* onClick siempre tiene un callback que seria un evento a no ser que le pasemos otro parametro dentro de la funcion (en este caso la funcion es eliminarTarea, y el parametro, (index)) */}
+                {lista.map((tarea) => (
+                    <li key={tarea.id} className="basurahover">
+                        {tarea.label}
                         <div className="misbotones">
                             <BotonCheck />
-                            <button className="btn" onClick={() => eliminarTarea(cosas.id)}>
-                                {/* //el icono de la basura va dentro del li */}
-
+                            <button className="btn" onClick={() => eliminarTarea(tarea.id)}>
                                 <i className="fas fa-trash-alt" />
                             </button>
                         </div>
                     </li>
                 ))}
-
             </ul>
-            <div className="cuantasTareas"> Total de tareas por hacer: {lista.length}</div>
+            <div className="cuantasTareas">Total de tareas por hacer: {lista.length}</div>
+        <div className="botonBorrarToDo">
 
-
+            <button className="btn" onClick={() => eliminarTodasTareas()}>
+                Borrar todas las tareas
+            </button>
 
         </div>
-    )
-}
-
+        </div>
+    );
+};
 
 export default ListaDeTareas;
