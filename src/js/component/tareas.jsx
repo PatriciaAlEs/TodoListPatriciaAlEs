@@ -16,58 +16,52 @@ const ListaDeTareas = () => {
                     "Content-Type": "application/json",
                 },
             });
-            if (!response.ok) {
-                throw new Error('No se pudo crear el usuario.');
-            }
             const data = await response.json();
             console.log('Usuario creado exitosamente:', data);
             getListTask();
         } catch (error) {
-            console.error('Error:', error);
+            console.error('algo está fallando:', error);
         }
     }
 
 
-    const getListTask = () => {
-        fetch("https://playground.4geeks.com/todo/users/HarryPotter")
-            .then((response) => {
-                if (!response.ok) {
-                    createUser();
-                    throw new Error('No se pudo obtener la lista de tareas.');
-                }
-                return response.json();
-            })
-            .then((data) => {
-                setLista(data.todos);
-            })
-            .catch((error) => {
-                console.log('Error:', error);
-            });
+    const getListTask = async () => {
+        try {
+            const response = await fetch("https://playground.4geeks.com/todo/users/HarryPotter");
+            if (!response.ok) {
+                await createUser(); // Espera a que el usuario sea creado
+            }
+            const data = await response.json();
+            setLista(data.todos);
+             console.log(data.todos);
+        } catch (error) {
+            console.log('Error:', error);
+        }
     };
 
 
 
-    const crearTarea = () => {
-        fetch("https://playground.4geeks.com/todo/todos/HarryPotter", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                label: tarea,
-                is_done: false,
-            }),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                getListTask();
-                setTarea("");
-            })
-            .catch((error) => {
-                console.log('Error:', error);
+    const crearTarea = async () => {
+        try {
+            const response = await fetch("https://playground.4geeks.com/todo/todos/HarryPotter", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    label: tarea,
+                    is_done: false,
+                }),
             });
-            console.log(tarea)
-            console.log(lista)
+
+            await response.json();
+            await getListTask(); // Espera a que la lista se actualice
+            setTarea("");
+        } catch (error) {
+            console.log('Error:', error);
+        }
+        console.log(tarea);
+        
     };
 
     
@@ -78,17 +72,10 @@ const ListaDeTareas = () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-            });
-
-            console.log(response);
-    
-            if (!response.ok) {
-                throw new Error('No se pudo eliminar la tarea');
-            }
-    
+            });   
             setLista((prevState) => prevState.filter((tarea) => tarea.id !== id));
     
-            console.log(`Tarea con id ${id} eliminada exitosamente.`);
+            console.log(`Tarea con id ${id} eliminada JEJEJEJ.`);
         } catch (error) {
             console.error('Hubo un problema con la eliminación:', error);
         }
@@ -102,15 +89,9 @@ const ListaDeTareas = () => {
                     "Content-Type": "application/json",
                 },
             });
-    
-            if (!response.ok) {
-                throw new Error('No se pudo eliminar la tarea');
-            }
-    
-            setLista([]);
-            createUser();
-    
             console.log('Todas las tareas han sido eliminadas exitosamente.');
+            setLista([]);
+            await createUser();  
         } catch (error) {
             console.error('Hubo un problema con la eliminación:', error);
         }
