@@ -30,13 +30,17 @@ const ListaDeTareas = () => {
             const response = await fetch("https://playground.4geeks.com/todo/users/HarryPotter");
             if (!response.ok) {
                 await createUser(); // Espera a que el usuario sea creado
+                return // Sale de la función
             }
+            
+            //si la respuesta es ok, entonces sigue con el código
             const data = await response.json();
             setLista(data.todos);
              console.log(data.todos);
         } catch (error) {
             console.log('Error:', error);
         }
+        
     };
 
 
